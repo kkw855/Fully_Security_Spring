@@ -1,13 +1,17 @@
 package com.endsoul.fully_security.security;
 
-import com.google.common.collect.Sets;
-import java.util.Set;
+import static com.endsoul.fully_security.security.ApplicationUserPermission.*;
+
+import io.vavr.collection.HashSet;
+import io.vavr.collection.Set;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 @AllArgsConstructor
+@Getter
 public enum ApplicationUserRole {
-  STUDENT(Sets.newHashSet()),
-  ADMIN(Sets.newHashSet());
+  STUDENT(HashSet.empty()),
+  ADMIN(HashSet.of(COURSE_READ, COURSE_WRITE, STUDENT_READ, STUDENT_WRITE));
 
   private final Set<ApplicationUserPermission> permissions;
 }

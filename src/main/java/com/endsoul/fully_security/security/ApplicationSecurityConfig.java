@@ -1,5 +1,7 @@
 package com.endsoul.fully_security.security;
 
+import static com.endsoul.fully_security.security.ApplicationUserRole.*;
+
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,11 +24,12 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
   @Override
   protected void configure(HttpSecurity http) throws Exception {
     http.authorizeRequests()
-        .antMatchers("/", "index", "/css/*", "/js/*.*")
+        .antMatchers("/", "index", "/css/*", "/js/**")
         .permitAll()
         .anyRequest()
         .authenticated()
         .and()
+        // Basic64 ID-PASSWORD
         .httpBasic();
   }
 
@@ -37,14 +40,14 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
         User.builder()
             .username("annasmith")
             .password(passwordEncoder.encode("password"))
-            .roles("STUDENT") // ROLE_STUDENT
+            .roles(STUDENT.name()) // ROLE_STUDENT
             .build();
 
     final UserDetails lindaUser =
         User.builder()
             .username("linda")
             .password(passwordEncoder.encode("password123"))
-            .roles("ADMIN") // ROLE_ADMIN
+            .roles(ADMIN.name()) // ROLE_ADMIN
             .build();
 
     return new InMemoryUserDetailsManager(annaSmithUser, lindaUser);
