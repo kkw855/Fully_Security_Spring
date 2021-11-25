@@ -16,6 +16,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @AllArgsConstructor
 @Configuration
@@ -43,10 +44,21 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
         .loginPage("/login")
         .permitAll()
         .defaultSuccessUrl("/courses", true)
+        .passwordParameter("password")
+        .usernameParameter("username")
         .and()
         .rememberMe()
         .tokenValiditySeconds((int) TimeUnit.DAYS.toSeconds(21))
-        .key("something_very_secured");
+        .key("something_very_secured")
+        .rememberMeParameter("remember-me")
+        .and()
+        .logout()
+        .logoutUrl("/logout")
+        .logoutRequestMatcher(new AntPathRequestMatcher("/logout", "GET"))
+        .clearAuthentication(true)
+        .invalidateHttpSession(true)
+        .deleteCookies("JSESSIONID", "remember-me")
+        .logoutSuccessUrl("/login");
   }
 
   @Override
