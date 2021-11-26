@@ -55,6 +55,8 @@ public class JwtUsernameAndPasswordAuthenticationFilter
       FilterChain chain,
       Authentication authResult)
       throws IOException, ServletException {
+    final String SECRET_KEY = "securesecuresecuresecuresecuresecuresecuresecuresecuresecure";
+
     final String token =
         Jwts.builder()
             .setSubject(authResult.getName())
@@ -63,7 +65,7 @@ public class JwtUsernameAndPasswordAuthenticationFilter
             .setExpiration(java.sql.Date.valueOf(LocalDate.now().plusWeeks(2)))
             .signWith(
                 Keys.hmacShaKeyFor(
-                    "securesecuresecuresecuresecuresecuresecuresecuresecuresecure".getBytes()))
+                    SECRET_KEY.getBytes()))
             .compact();
 
     response.addHeader("Authorization", "Bearer " + token);
