@@ -3,7 +3,10 @@ package com.endsoul.fully_security.security;
 import static com.endsoul.fully_security.security.ApplicationUserRole.STUDENT;
 
 import com.endsoul.fully_security.auth.ApplicationUserService;
+import com.endsoul.fully_security.jwt.JwtConfig;
+import com.endsoul.fully_security.jwt.JwtTokenVerifier;
 import com.endsoul.fully_security.jwt.JwtUsernameAndPasswordAuthenticationFilter;
+import javax.crypto.SecretKey;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -21,6 +24,8 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
 
   private final PasswordEncoder passwordEncoder;
   private final ApplicationUserService applicationUserService;
+  private final JwtConfig jwtConfig;
+  private final SecretKey secretKey;
 
   @Override
   protected void configure(HttpSecurity http) throws Exception {
@@ -30,7 +35,12 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
         .sessionManagement()
         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
         .and()
-        .addFilter(new JwtUsernameAndPasswordAuthenticationFilter(authenticationManager()))
+        .addFilter(
+            new JwtUsernameAndPasswordAuthenticationFilter(
+                authenticationManager(), jwtConfig, secretKey))
+        .addFilterAfter(
+            new JwtTokenVerifier(jwtConfig, secretKey),
+            JwtUsernameAndPasswordAuthenticationFilter.class)
         .authorizeRequests()
         .antMatchers("/", "index", "/css/*", "/js/**")
         .permitAll()
